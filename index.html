@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Mini-apki – Zbieractwo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card: #020617;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #1e293b;
+  --primary: #3b82f6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  padding: 16px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 1.2rem;
+}
+
+button.toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.field {
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.levels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.levels label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+
+button.main {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: .85rem;
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 6px;
+  text-align: center;
+}
+
+th {
+  background: rgba(0,0,0,.04);
+}
+</style>
+</head>
+
+<body data-theme="light">
+
+<header>
+  <h1>Mini-apki</h1>
+  <button class="toggle" onclick="toggleTheme()">🌗 Motyw</button>
+</header>
+
+<div class="layout">
+
+<!-- =================== APLIKACJA =================== -->
+<div class="card">
+  <h2>Zbieractwo</h2>
+
+  <div class="field">
+    <label>Pikinier</label>
+    <input type="number" id="pikinier" value="150">
+  </div>
+
+  <div class="field">
+    <label>Miecznik</label>
+    <input type="number" id="miecznik" value="53">
+  </div>
+
+  <div class="field">
+    <label>Lekka kawaleria</label>
+    <input type="number" id="lekka" value="5">
+  </div>
+
+  <div class="levels">
+    <label><input type="checkbox" id="p1" checked> Poziom 1 (0.1)</label>
+    <label><input type="checkbox" id="p2" checked> Poziom 2 (0.25)</label>
+    <label><input type="checkbox" id="p3" checked> Poziom 3 (0.5)</label>
+    <label><input type="checkbox" id="p4" checked> Poziom 4 (0.75)</label>
+  </div>
+
+  <button class="main" onclick="oblicz()">Oblicz</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Jednostka</th>
+        <th>P1</th>
+        <th>P2</th>
+        <th>P3</th>
+        <th>P4</th>
+      </tr>
+    </thead>
+    <tbody id="wynik"></tbody>
+  </table>
+</div>
+
+</div>
+
+<script>
+const lad = {
+  Pikinier: 25,
+  Miecznik: 15,
+  "Lekka kawaleria": 80
+};
+
+const poziomy = [
+  { id: "p1", val: 0.1 },
+  { id: "p2", val: 0.25 },
+  { id: "p3", val: 0.5 },
+  { id: "p4", val: 0.75 }
+];
+
+function toggleTheme() {
+  document.body.dataset.theme =
+    document.body.dataset.theme === "light" ? "dark" : "light";
+}
+
+function oblicz() {
+  const lista = {
+    Pikinier: +pikinier.value,
+    Miecznik: +miecznik.value,
+    "Lekka kawaleria": +lekka.value
+  };
+
+  const suma =
+    lista.Pikinier * lad.Pikinier +
+    lista.Miecznik * lad.Miecznik +
+    lista["Lekka kawaleria"] * lad["Lekka kawaleria"];
+
+  const aktywne = poziomy.map(p =>
+    document.getElementById(p.id).checked ? p.val : 0
+  );
+
+  const odw = aktywne.map(v => v ? 1 / v : 0);
+  const s = odw.reduce((a, b) => a + b, 0);
+
+  const rozklad = odw.map(o => s ? Math.round(suma * o / s) : 0);
+
+  const wynik = {
+    Pikinier: [0,0,0,0],
+    Miecznik: [0,0,0,0],
+    "Lekka kawaleria": [0,0,0,0]
+  };
+
+  for (let i = 0; i < 4; i++) {
+    let lad_do = rozklad[i];
+
+    for (const j of ["Lekka kawaleria","Pikinier","Miecznik"]) {
+      const max = Math.min(
+        lista[j],
+        Math.floor(lad_do / lad[j])
+      );
+      wynik[j][i] = max;
+      lista[j] -= max;
+      lad_do -= max * lad[j];
+    }
+  }
+
+  render(wynik);
+}
+
+function render(w) {
+  const tbody = document.getElementById("wynik");
+  tbody.innerHTML = "";
+
+  for (const [k, v] of Object.entries(w)) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      `<td>${k}</td>` +
+      v.map(x => `<td>${x}</td>`).join("");
+    tbody.appendChild(tr);
+  }
+}
+</script>
+
+</body>
+</html>
