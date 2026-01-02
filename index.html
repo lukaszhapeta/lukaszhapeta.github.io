@@ -62,10 +62,12 @@ button.toggle {
   
 /* header dziedziczy szerokość kontenera */
 .page > header {
+  width: 100%; /* mobile */
+  max-width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin: 0 auto 16px auto;
 }
 
 .layout {
@@ -77,6 +79,9 @@ button.toggle {
 /* Desktop */
 @media (min-width: 1024px) {
   .layout {
+    width: 70%;
+  }
+  .page > header {
     width: 70%;
   }
 }
