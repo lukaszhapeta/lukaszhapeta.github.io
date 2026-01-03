@@ -186,6 +186,11 @@ th {
       <label>Miecznik</label>
       <input type="number" id="miecznik">
     </div>
+
+    <div class="field">
+      <label>Topornik</label>
+      <input type="number" id="topornik">
+    </div>
   
     <div class="field">
       <label>Lekka kawaleria</label>
@@ -223,6 +228,7 @@ th {
 const lad = {
   Pikinier: 25,
   Miecznik: 15,
+  Topornik: 10,
   "Lekka kawaleria": 80
 };
 
@@ -242,12 +248,14 @@ function oblicz() {
   const lista = {
     Pikinier: +pikinier.value,
     Miecznik: +miecznik.value,
+    Topornik: +topornik.value,
     "Lekka kawaleria": +lekka.value
   };
 
   const suma =
     lista.Pikinier * lad.Pikinier +
     lista.Miecznik * lad.Miecznik +
+    lista.Topornik * lad.Topornik +
     lista["Lekka kawaleria"] * lad["Lekka kawaleria"];
 
   const aktywne = poziomy.map(p =>
@@ -268,7 +276,7 @@ function oblicz() {
   for (let i = 3; i >= 0; i--) {
     let lad_do = rozklad[i];
 
-    for (const j of ["Lekka kawaleria","Pikinier","Miecznik"]) {
+    for (const j of ["Lekka kawaleria","Pikinier","Miecznik", "Topornik"]) {
       const max = Math.min(
         lista[j],
         Math.floor(lad_do / lad[j])
@@ -298,6 +306,7 @@ function render(w) {
 
 </body>
 </html>
+
 
 
 
