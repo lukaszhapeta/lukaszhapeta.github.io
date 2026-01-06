@@ -244,6 +244,35 @@ function toggleTheme() {
     document.body.dataset.theme === "light" ? "dark" : "light";
 }
 
+function secondsToHHMMSS(seconds) {
+  if (!seconds || seconds <= 0) return "00:00:00";
+
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  return (
+    String(h).padStart(2, "0") + ":" +
+    String(m).padStart(2, "0") + ":" +
+    String(s).padStart(2, "0")
+  );
+}
+
+
+function czasOdLadownosci(ladownosc, lootFactor) {
+  const durationExponent = 0.45;
+  const durationFactor = 0.8845033718614886;
+  const durationInitialSeconds = 1800;
+
+  const czas =
+    (Math.pow(ladownosc ** 2 * 100 * lootFactor ** 2, durationExponent)
+      + durationInitialSeconds) *
+    durationFactor;
+
+  return Math.round(czas);
+}
+
+
 function oblicz() {
   const lista = {
     Pikinier: +pikinier.value,
@@ -267,6 +296,14 @@ function oblicz() {
 
   const rozklad = odw.map(o => s ? Math.round(suma * o / s) : 0);
 
+  const czasy = rozklad.map((lad, i) =>
+    aktywne[i] > 0
+      ? secondsToHHMMSS(czasOdLadownosci(lad, aktywne[i]))
+      : "00:00:00"
+  );
+
+
+
   const wynik = {
     Pikinier: [0,0,0,0],
     Miecznik: [0,0,0,0],
@@ -288,10 +325,10 @@ function oblicz() {
     }
   }
 
-  render(wynik);
+  render(wynik, czasy);
 }
 
-function render(w) {
+function render(w, czasy) {
   const tbody = document.getElementById("wynik");
   tbody.innerHTML = "";
 
@@ -302,11 +339,19 @@ function render(w) {
       v.map(x => `<td>${x}</td>`).join("");
     tbody.appendChild(tr);
   }
+  
+  const tr = document.createElement("tr");
+  tr.innerHTML =
+    `<td><strong>Czas (s)</strong></td>` +
+    czasy.map(c => `<td>${c}</td>`).join("");
+  tbody.appendChild(tr);
+
 }
 </script>
 
 </body>
 </html>
+
 
 
 
