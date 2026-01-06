@@ -322,7 +322,7 @@ function rozdysponujJednostki(rozklad, lista) {
   for (let i = 3; i >= 0; i--) {
     let lad_do = rozklad[i];
 
-    for (const j of ["Lekka kawaleria","Pikinier","Miecznik"]) {
+    for (const j of ["Lekka kawaleria","Pikinier","Miecznik", "Topornik"]) {
       const max = Math.min(
         lista[j],
         Math.floor(lad_do / lad[j])
@@ -473,6 +473,7 @@ function render(w, czasy) {
 
 </body>
 </html>
+
 
 
 
