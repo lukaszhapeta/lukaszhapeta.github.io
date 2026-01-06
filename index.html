@@ -322,7 +322,7 @@ function rozdysponujJednostki(rozklad, lista) {
   for (let i = 3; i >= 0; i--) {
     let lad_do = rozklad[i];
 
-    for (const j of ["Lekka kawaleria","Pikinier","Miecznik", "Topornik"]) {
+    for (const j of ["Lekka kawaleria","Pikinier","Miecznik","Topornik"]) {
       const max = Math.min(
         lista[j],
         Math.floor(lad_do / lad[j])
@@ -333,7 +333,7 @@ function rozdysponujJednostki(rozklad, lista) {
     }
   }
 
-  render(wynik);
+  return wynik;
 }
 
 
@@ -404,9 +404,28 @@ function oblicz() {
       break;
     }
   
-    // dalej NORMALNE rozdysponowanie jednostek
-    rozdysponujJednostki(rozklad, lista);
-    return;
+  const wynik = rozdysponujJednostki(rozklad, lista);
+  
+  // 🔹 faktyczna ładowność per poziom
+  const ladNaPoziom = [0,0,0,0];
+  
+  for (let i = 0; i < 4; i++) {
+    ladNaPoziom[i] =
+      wynik.Pikinier[i] * lad.Pikinier +
+      wynik.Miecznik[i] * lad.Miecznik +
+      wynik.Topornik[i] * lad.Topornik +
+      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
+  }
+  
+  // 🔹 czas liczony ZAWSZE z funkcji czasOdLadownosci
+  const czasy = ladNaPoziom.map((l, i) =>
+    l > 0
+      ? secondsToHHMMSS(czasOdLadownosci(l, poziomy[i].val))
+      : "00:00:00"
+  );
+  
+  render(wynik, czasy);
+  return;
   }
 
   const aktywne = poziomy.map(p =>
@@ -473,6 +492,7 @@ function render(w, czasy) {
 
 </body>
 </html>
+
 
 
 
