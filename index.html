@@ -283,7 +283,7 @@ function czasOdLadownosci(ladownosc, lootFactor) {
   const durationExponent = 0.45;
   const durationFactor = 0.8845033718614886;
   const durationInitialSeconds = 1800;
-
+  
   const czas =
     (Math.pow(ladownosc ** 2 * 100 * lootFactor ** 2, durationExponent)
       + durationInitialSeconds) *
@@ -354,80 +354,80 @@ function oblicz() {
     lista.Topornik * lad.Topornik +
     lista["Lekka kawaleria"] * lad["Lekka kawaleria"];
 
+  // ----------------- FORCE TIME -----------------
   if (force) {
     const czasSek =
       (+hh.value || 0) * 3600 +
       (+mm.value || 0) * 60 +
       (+ss.value || 0);
-  
+
     if (czasSek <= 0) {
       alert("Podaj poprawny czas");
       return;
     }
-  
-    // aktywne poziomy (z loot_factorem)
-    const aktywnePoziomy = poziomy
-      .map((p, i) => ({
-        index: i,
-        loot: document.getElementById(p.id).checked ? p.val : 0
-      }))
+
+    // aktywne poziomy
+    let aktywnePoziomy = poziomy
+      .map((p, i) => ({ index: i, loot: document.getElementById(p.id).checked ? p.val : 0 }))
       .filter(p => p.loot > 0);
-  
-    // od NAJWYŻSZEGO
+
+    if (aktywnePoziomy.length === 0) {
+      alert("Zaznacz przynajmniej jeden poziom");
+      return;
+    }
+
+    // od najwyższego
     aktywnePoziomy.sort((a, b) => b.loot - a.loot);
-  
+
     let pozostalaLad = suma;
-    const rozklad = [0,0,0,0];
-  
+    const rozklad = [0, 0, 0, 0];
+
     for (let i = 0; i < aktywnePoziomy.length; i++) {
       const p = aktywnePoziomy[i];
-  
+
       // suma potrzebna od tego poziomu w dół
-      const potrzebna =
-        aktywnePoziomy
-          .slice(i)
-          .reduce(
-            (acc, x) => acc + ladownoscOdCzasu(czasSek, x.loot),
-            0
-          );
-  
+      const potrzebna = aktywnePoziomy
+        .slice(i)
+        .reduce((acc, x) => acc + ladownoscOdCzasu(czasSek, x.loot), 0);
+
       if (potrzebna > suma) continue;
-  
+
       for (let j = i; j < aktywnePoziomy.length; j++) {
         const pj = aktywnePoziomy[j];
-        const lad = ladownoscOdCzasu(czasSek, pj.loot);
-  
-        const doWziecia = Math.min(lad, pozostalaLad);
+        const ladPotrzebna = ladownoscOdCzasu(czasSek, pj.loot);
+        const doWziecia = Math.min(ladPotrzebna, pozostalaLad);
+
         rozklad[pj.index] = doWziecia;
         pozostalaLad -= doWziecia;
       }
       break;
     }
-  
-  const wynik = rozdysponujJednostki(rozklad, lista);
-  
-  // 🔹 faktyczna ładowność per poziom
-  const ladNaPoziom = [0,0,0,0];
-  
-  for (let i = 0; i < 4; i++) {
-    ladNaPoziom[i] =
-      wynik.Pikinier[i] * lad.Pikinier +
-      wynik.Miecznik[i] * lad.Miecznik +
-      wynik.Topornik[i] * lad.Topornik +
-      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
-  }
-  
-  // 🔹 czas liczony ZAWSZE z funkcji czasOdLadownosci
-  const czasy = ladNaPoziom.map((l, i) =>
-    l > 0
-      ? secondsToHHMMSS(czasOdLadownosci(l, poziomy[i].val))
-      : "00:00:00"
-  );
-  
-  render(wynik, czasy);
-  return;
+
+    // faktyczne przydzielenie jednostek
+    const wynik = rozdysponujJednostki(rozklad, { ...lista });
+
+    // faktyczna ładowność per poziom
+    const ladNaPoziom = [0, 0, 0, 0];
+    for (let i = 0; i < 4; i++) {
+      ladNaPoziom[i] =
+        wynik.Pikinier[i] * lad.Pikinier +
+        wynik.Miecznik[i] * lad.Miecznik +
+        wynik.Topornik[i] * lad.Topornik +
+        wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
+    }
+
+    // czas zawsze liczony z funkcji czasOdLadownosci
+    const czasy = ladNaPoziom.map((l, i) =>
+      l > 0 && document.getElementById(poziomy[i].id).checked
+        ? secondsToHHMMSS(czasOdLadownosci(l, poziomy[i].val))
+        : "00:00:00"
+    );
+
+    render(wynik, czasy);
+    return;
   }
 
+  // ----------------- NORMALNE OBLICZENIE -----------------
   const aktywne = poziomy.map(p =>
     document.getElementById(p.id).checked ? p.val : 0
   );
@@ -437,37 +437,28 @@ function oblicz() {
 
   const rozklad = odw.map(o => s ? Math.round(suma * o / s) : 0);
 
-  const czasy = rozklad.map((lad, i) =>
-    aktywne[i] > 0
-      ? secondsToHHMMSS(czasOdLadownosci(lad, aktywne[i]))
+  // faktyczne przydzielenie jednostek
+  const wynik = rozdysponujJednostki(rozklad, { ...lista });
+
+  // faktyczna ładowność per poziom
+  const ladNaPoziom = [0, 0, 0, 0];
+  for (let i = 0; i < 4; i++) {
+    ladNaPoziom[i] =
+      wynik.Pikinier[i] * lad.Pikinier +
+      wynik.Miecznik[i] * lad.Miecznik +
+      wynik.Topornik[i] * lad.Topornik +
+      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
+  }
+
+  const czasy = ladNaPoziom.map((l, i) =>
+    l > 0 && aktywne[i] > 0
+      ? secondsToHHMMSS(czasOdLadownosci(l, aktywne[i]))
       : "00:00:00"
   );
 
-
-
-  const wynik = {
-    Pikinier: [0,0,0,0],
-    Miecznik: [0,0,0,0],
-    Topornik: [0,0,0,0],
-    "Lekka kawaleria": [0,0,0,0]
-  };
-
-  for (let i = 3; i >= 0; i--) {
-    let lad_do = rozklad[i];
-
-    for (const j of ["Lekka kawaleria","Pikinier","Miecznik", "Topornik"]) {
-      const max = Math.min(
-        lista[j],
-        Math.floor(lad_do / lad[j])
-      );
-      wynik[j][i] = max;
-      lista[j] -= max;
-      lad_do -= max * lad[j];
-    }
-  }
-
   render(wynik, czasy);
 }
+
 
 function render(w, czasy) {
   const tbody = document.getElementById("wynik");
