@@ -196,12 +196,17 @@ th {
       <label>Lekka kawaleria</label>
       <input type="number" id="lekka">
     </div>
+
+    <div class="field">
+      <label>Cięzka kawaleria</label>
+      <input type="number" id="ciezka">
+    </div>
   
     <div class="levels">
       <label><input type="checkbox" id="p1" checked> Poziom 1 (0.1)</label>
       <label><input type="checkbox" id="p2" checked> Poziom 2 (0.25)</label>
       <label><input type="checkbox" id="p3" checked> Poziom 3 (0.5)</label>
-      <label><input type="checkbox" id="p4"> Poziom 4 (0.75)</label>
+      <label><input type="checkbox" id="p4" checked> Poziom 4 (0.75)</label>
 
       <label>
         <input type="checkbox" id="forceTime">
@@ -243,7 +248,8 @@ const lad = {
   Pikinier: 25,
   Miecznik: 15,
   Topornik: 10,
-  "Lekka kawaleria": 80
+  "Lekka kawaleria": 80,
+  "Ciężka kawaleria": 50
 };
 
 const poziomy = [
@@ -316,13 +322,14 @@ function rozdysponujJednostki(rozklad, lista) {
     Pikinier: [0,0,0,0],
     Miecznik: [0,0,0,0],
     Topornik: [0,0,0,0],
-    "Lekka kawaleria": [0,0,0,0]
+    "Lekka kawaleria": [0,0,0,0],
+    "Ciężka kawaleria": [0,0,0,0]
   };
 
   for (let i = 3; i >= 0; i--) {
     let lad_do = rozklad[i];
 
-    for (const j of ["Lekka kawaleria","Pikinier","Miecznik","Topornik"]) {
+    for (const j of ["Lekka kawaleria", "Ciężka kawaleria", "Pikinier","Miecznik","Topornik"]) {
       const max = Math.min(
         lista[j],
         Math.floor(lad_do / lad[j])
@@ -345,14 +352,16 @@ function oblicz() {
     Pikinier: +pikinier.value,
     Miecznik: +miecznik.value,
     Topornik: +topornik.value,
-    "Lekka kawaleria": +lekka.value
+    "Lekka kawaleria": +lekka.value,
+    "Ciężka kawaleria": +ciezka.value
   };
 
   const suma =
     lista.Pikinier * lad.Pikinier +
     lista.Miecznik * lad.Miecznik +
     lista.Topornik * lad.Topornik +
-    lista["Lekka kawaleria"] * lad["Lekka kawaleria"];
+    lista["Lekka kawaleria"] * lad["Lekka kawaleria"] +
+    lista["Ciężka kawaleria"] * lad["Ciężka kawaleria"];
 
   // ----------------- FORCE TIME -----------------
   if (force) {
@@ -413,7 +422,8 @@ function oblicz() {
         wynik.Pikinier[i] * lad.Pikinier +
         wynik.Miecznik[i] * lad.Miecznik +
         wynik.Topornik[i] * lad.Topornik +
-        wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
+        wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
+        wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
     }
 
     // czas zawsze liczony z funkcji czasOdLadownosci
@@ -447,7 +457,8 @@ function oblicz() {
       wynik.Pikinier[i] * lad.Pikinier +
       wynik.Miecznik[i] * lad.Miecznik +
       wynik.Topornik[i] * lad.Topornik +
-      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"];
+      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
+      wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
   }
 
   const czasy = ladNaPoziom.map((l, i) =>
@@ -483,6 +494,7 @@ function render(w, czasy) {
 
 </body>
 </html>
+
 
 
 
