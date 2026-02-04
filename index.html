@@ -248,7 +248,9 @@ const lad = {
   Pikinier: 25,
   Miecznik: 15,
   Topornik: 10,
+  "Łucznik": 10,
   "Lekka kawaleria": 80,
+  "Łucznik na koniu": 50,
   "Ciężka kawaleria": 50
 };
 
@@ -322,14 +324,16 @@ function rozdysponujJednostki(rozklad, lista) {
     Pikinier: [0,0,0,0],
     Miecznik: [0,0,0,0],
     Topornik: [0,0,0,0],
+    "Łucznik": [0,0,0,0],
     "Lekka kawaleria": [0,0,0,0],
+    "Łucznik na koniu": [0,0,0,0],
     "Ciężka kawaleria": [0,0,0,0]
   };
 
   for (let i = 3; i >= 0; i--) {
     let lad_do = rozklad[i];
 
-    for (const j of ["Lekka kawaleria", "Ciężka kawaleria", "Pikinier","Miecznik","Topornik"]) {
+    for (const j of ["Lekka kawaleria", "Łucznik na koniu", "Ciężka kawaleria", "Pikinier","Miecznik","Topornik", "Łucznik"]) {
       const max = Math.min(
         lista[j],
         Math.floor(lad_do / lad[j])
@@ -352,7 +356,9 @@ function oblicz() {
     Pikinier: +pikinier.value,
     Miecznik: +miecznik.value,
     Topornik: +topornik.value,
+    "Łucznik": + lucznik.value,
     "Lekka kawaleria": +lekka.value,
+    "Łucznik na koniu": + lucznik_kon.value,
     "Ciężka kawaleria": +ciezka.value
   };
 
@@ -360,7 +366,9 @@ function oblicz() {
     lista.Pikinier * lad.Pikinier +
     lista.Miecznik * lad.Miecznik +
     lista.Topornik * lad.Topornik +
+    lista["Łucznik] * lad["Łucznik"] +
     lista["Lekka kawaleria"] * lad["Lekka kawaleria"] +
+    lista["Łucznik na koniu"] * lad["Łucznik na koniu"] +
     lista["Ciężka kawaleria"] * lad["Ciężka kawaleria"];
 
   // ----------------- FORCE TIME -----------------
@@ -422,7 +430,9 @@ function oblicz() {
         wynik.Pikinier[i] * lad.Pikinier +
         wynik.Miecznik[i] * lad.Miecznik +
         wynik.Topornik[i] * lad.Topornik +
+        wynik["Łucznik"][i] * lad["Łucznik"] +
         wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
+        wynik["Łucznik na koniu"][i] * lad["Łucznik na koniu"] +
         wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
     }
 
@@ -457,7 +467,9 @@ function oblicz() {
       wynik.Pikinier[i] * lad.Pikinier +
       wynik.Miecznik[i] * lad.Miecznik +
       wynik.Topornik[i] * lad.Topornik +
+      wynik["Łucznik"][i] * lad["Łucznik"] +
       wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
+      wynik["Łucznik na koniu"][i] * lad["Łucznik na koniu"] +
       wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
   }
 
@@ -494,6 +506,7 @@ function render(w, czasy) {
 
 </body>
 </html>
+
 
 
 
