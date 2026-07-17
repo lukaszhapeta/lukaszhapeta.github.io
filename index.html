@@ -2,537 +2,87 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Plemiona</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root {
-  --bg: #f5f7fa;
-  --card: #ffffff;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --primary: #2563eb;
-}
-
-[data-theme="dark"] {
-  --bg: #0f172a;
-  --card: #020617;
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --border: #1e293b;
-  --primary: #3b82f6;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
-  padding: 16px;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-h1 {
-  font-size: 1.2rem;
-}
-
-button.toggle {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.page {
-  width: 100%;
-  margin: 0 auto;
-}
-
-  
-/* header dziedziczy szerokość kontenera */
-.page > header {
-  width: 100%; /* mobile */
-  max-width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 auto 16px auto;
-}
-
-.layout {
-  /* width: 100%; */
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .layout {
-    width: 70%;
-  }
-  .page > header {
-    width: 70%;
-  }
-}
-
-
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
-}
-
-.field {
-  margin-bottom: 10px;
-}
-
-label {
-  font-size: .85rem;
-  color: var(--muted);
-}
-
-input[type="number"] {
-  width: 100%;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-}
-
-.levels {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 12px 0;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.levels label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-
-button.main {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: var(--primary);
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 14px;
-  font-size: .85rem;
-}
-
-th, td {
-  border: 1px solid var(--border);
-  padding: 6px;
-  text-align: center;
-}
-
-th {
-  background: rgba(0,0,0,.04);
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Gothic Remake Lockpick Solver</title>
+<link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body data-theme="dark">
-
-<div class="page">  
-  
-  <header>
-    <h1>Mini-apki</h1>
-    <button class="toggle" onclick="toggleTheme()">🌗 Motyw</button>
+  <header class="app-header">
+    <h1 class="app-title">Gothic Remake<br><span class="app-title-accent">Lockpick Solver</span></h1>
   </header>
 
+  <!-- Widoczne tylko na telefonie: przełącznik Starting position / Moveset -->
+  <nav class="mobile-switch" id="mobileSwitch" aria-label="Przełącznik paneli">
+    <button type="button" class="mobile-switch-option is-active" data-target="starting">Starting position</button>
+    <button type="button" class="mobile-switch-track" id="mobileSwitchTrack" aria-hidden="true"><span class="mobile-switch-thumb"></span></button>
+    <button type="button" class="mobile-switch-option" data-target="moveset">Moveset</button>
+  </nav>
 
-  <div class="layout">
-  
-  <!-- =================== APLIKACJA =================== -->
-  <div class="card">
-    <h2>Zbieractwo</h2>
-  
-    <div class="field">
-      <label>Pikinier</label>
-      <input type="number" id="pikinier">
-    </div>
-  
-    <div class="field">
-      <label>Miecznik</label>
-      <input type="number" id="miecznik">
-    </div>
+  <main class="layout">
 
-    <div class="field">
-      <label>Topornik</label>
-      <input type="number" id="topornik">
-    </div>
-  
-    <div class="field">
-      <label>Łucznik</label>
-      <input type="number" id="lucznik">
-    </div>
-    
-    <div class="field">
-      <label>Lekka kawaleria</label>
-      <input type="number" id="lekka">
-    </div>
-  
-    <div class="field">
-      <label>Łucznik na koniu</label>
-      <input type="number" id="lucznik_kon">
-    </div>
-    
-    <div class="field">
-      <label>Cięzka kawaleria</label>
-      <input type="number" id="ciezka">
-    </div>
-  
-    <div class="levels">
-      <label><input type="checkbox" id="p1" checked> Poziom 1 (0.1)</label>
-      <label><input type="checkbox" id="p2" checked> Poziom 2 (0.25)</label>
-      <label><input type="checkbox" id="p3" checked> Poziom 3 (0.5)</label>
-      <label><input type="checkbox" id="p4" checked> Poziom 4 (0.75)</label>
+    <!-- ===================== STARTING POSITION ===================== -->
+    <section id="startingPanel" class="panel panel-starting is-active-mobile">
+      <h2 class="panel-title">Starting position</h2>
 
-      <label>
-        <input type="checkbox" id="forceTime">
-        Wymuś konkretny czas
-      </label>
-      
-      <div id="timeInput" style="display:none; gap:6px; margin-top:6px;">
-        <input type="number" id="hh" min="0" placeholder="HH" style="width:60px">
-        <span>:</span>
-        <input type="number" id="mm" min="0" max="59" placeholder="MM" style="width:60px">
-        <span>:</span>
-        <input type="number" id="ss" min="0" max="59" placeholder="SS" style="width:60px">
+      <div class="control-group">
+        <div class="control-label-row">
+          <label for="blockCountSlider" class="control-label">Number of blocks</label>
+          <span class="control-value" id="blockCountValue">6</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-bound">4</span>
+          <input type="range" id="blockCountSlider" class="slider" min="4" max="7" step="1" value="6">
+          <span class="slider-bound">7</span>
+        </div>
       </div>
 
-    </div>
-  
-    <button class="main" onclick="oblicz()">Oblicz</button>
-  
-    <table>
-      <thead>
-        <tr>
-          <th>Jednostka</th>
-          <th>P1</th>
-          <th>P2</th>
-          <th>P3</th>
-          <th>P4</th>
-        </tr>
-      </thead>
-      <tbody id="wynik"></tbody>
-    </table>
-  </div>
-  
-  </div>
+      <div class="pin-grid-wrap">
+        <div id="pinGrid" class="pin-grid"></div>
+      </div>
 
-</div>
+      <div class="solve-row">
+        <button type="button" id="solveBtn" class="btn btn-solve">SOLVE</button>
+        <span id="solveWarning" class="solve-warning" hidden>Select all blocks first</span>
+      </div>
+    </section>
 
-<script>
-const lad = {
-  Pikinier: 25,
-  Miecznik: 15,
-  Topornik: 10,
-  "Łucznik": 10,
-  "Lekka kawaleria": 80,
-  "Łucznik na koniu": 50,
-  "Ciężka kawaleria": 50
-};
+    <!-- ===================== MOVESET ===================== -->
+    <section id="movesetPanel" class="panel panel-moveset">
+      <h2 class="panel-title">Moveset <span class="panel-subtitle">technical table</span></h2>
 
-const poziomy = [
-  { id: "p1", val: 0.1 },
-  { id: "p2", val: 0.25 },
-  { id: "p3", val: 0.5 },
-  { id: "p4", val: 0.75 }
-];
+      <p id="movesetWarning" class="moveset-warning" hidden></p>
 
-document.getElementById("forceTime").addEventListener("change", e => {
-  document.getElementById("timeInput").style.display =
-    e.target.checked ? "flex" : "none";
-});
+      <div class="table-wrap">
+        <table id="movesetTable" class="moveset-table"></table>
+      </div>
+    </section>
 
+    <!-- ===================== SOLUTION ===================== -->
+    <section class="panel panel-solution">
+      <div class="solution-header">
+        <h2 class="panel-title">Solution</h2>
+        <div id="modeSwitch" class="mode-switch" hidden>
+          <span class="mode-switch-label" data-mode-label="blocks">Blocks</span>
+          <button type="button" id="modeToggle" class="mode-toggle" data-mode="blocks" aria-label="Przełącz tryb Blocks / Arrows">
+            <span class="mode-toggle-thumb"></span>
+          </button>
+          <span class="mode-switch-label" data-mode-label="arrows">Arrows</span>
+        </div>
+      </div>
 
-function toggleTheme() {
-  document.body.dataset.theme =
-    document.body.dataset.theme === "light" ? "dark" : "light";
-}
+      <div id="solutionContent" class="solution-content">
+        <p class="solution-placeholder">Enter data and press solve</p>
+      </div>
 
-function secondsToHHMMSS(seconds) {
-  if (!seconds || seconds <= 0) return "00:00:00";
+      <div id="solutionActions" class="solution-actions" hidden>
+        <button type="button" id="copyBtn" class="btn btn-secondary">COPY</button>
+        <button type="button" id="resetBtn" class="btn btn-secondary">RESET</button>
+      </div>
+    </section>
 
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = seconds % 60;
+  </main>
 
-  return (
-    String(h).padStart(2, "0") + ":" +
-    String(m).padStart(2, "0") + ":" +
-    String(s).padStart(2, "0")
-  );
-}
-
-
-function czasOdLadownosci(ladownosc, lootFactor) {
-  const durationExponent = 0.45;
-  const durationFactor = 0.7722074896557402;
-  const durationInitialSeconds = 1800;
-  
-  const czas =
-    (Math.pow(ladownosc ** 2 * 100 * lootFactor ** 2, durationExponent)
-      + durationInitialSeconds) *
-    durationFactor;
-
-  return Math.round(czas);
-}
-
-function ladownoscOdCzasu(czasSekundy, lootFactor) {
-  const duration_exponent = 0.45;
-  const duration_factor = 0.7722074896557402;
-  const duration_initial_seconds = 1800;
-
-  const val =
-    (czasSekundy / duration_factor - duration_initial_seconds);
-
-  if (val <= 0) return 0;
-
-  const lad =
-    Math.sqrt(
-      Math.pow(val, 1 / duration_exponent) /
-      (100 * lootFactor * lootFactor)
-    );
-
-  return Math.floor(lad);
-}
-
-function rozdysponujJednostki(rozklad, lista) {
-  const wynik = {
-    Pikinier: [0,0,0,0],
-    Miecznik: [0,0,0,0],
-    Topornik: [0,0,0,0],
-    "Łucznik": [0,0,0,0],
-    "Lekka kawaleria": [0,0,0,0],
-    "Łucznik na koniu": [0,0,0,0],
-    "Ciężka kawaleria": [0,0,0,0]
-  };
-
-  for (let i = 3; i >= 0; i--) {
-    let lad_do = rozklad[i];
-
-    for (const j of ["Lekka kawaleria", "Łucznik na koniu", "Ciężka kawaleria", "Pikinier","Miecznik","Topornik", "Łucznik"]) {
-      const max = Math.min(
-        lista[j],
-        Math.floor(lad_do / lad[j])
-      );
-      wynik[j][i] = max;
-      lista[j] -= max;
-      lad_do -= max * lad[j];
-    }
-  }
-
-  return wynik;
-}
-
-
-
-function oblicz() {
-  const force = document.getElementById("forceTime").checked;
-
-  const lista = {
-    Pikinier: +pikinier.value,
-    Miecznik: +miecznik.value,
-    Topornik: +topornik.value,
-    "Łucznik": + lucznik.value,
-    "Lekka kawaleria": +lekka.value,
-    "Łucznik na koniu": + lucznik_kon.value,
-    "Ciężka kawaleria": +ciezka.value
-  };
-
-  const suma =
-    lista.Pikinier * lad.Pikinier +
-    lista.Miecznik * lad.Miecznik +
-    lista.Topornik * lad.Topornik +
-    lista["Łucznik"] * lad["Łucznik"] +
-    lista["Lekka kawaleria"] * lad["Lekka kawaleria"] +
-    lista["Łucznik na koniu"] * lad["Łucznik na koniu"] +
-    lista["Ciężka kawaleria"] * lad["Ciężka kawaleria"];
-
-  // ----------------- FORCE TIME -----------------
-  if (force) {
-    const czasSek =
-      (+hh.value || 0) * 3600 +
-      (+mm.value || 0) * 60 +
-      (+ss.value || 0);
-
-    if (czasSek <= 0) {
-      alert("Podaj poprawny czas");
-      return;
-    }
-
-    // aktywne poziomy
-    let aktywnePoziomy = poziomy
-      .map((p, i) => ({ index: i, loot: document.getElementById(p.id).checked ? p.val : 0 }))
-      .filter(p => p.loot > 0);
-
-    if (aktywnePoziomy.length === 0) {
-      alert("Zaznacz przynajmniej jeden poziom");
-      return;
-    }
-
-    // od najwyższego
-    aktywnePoziomy.sort((a, b) => b.loot - a.loot);
-
-    let pozostalaLad = suma;
-    const rozklad = [0, 0, 0, 0];
-
-    for (let i = 0; i < aktywnePoziomy.length; i++) {
-      const p = aktywnePoziomy[i];
-
-      // suma potrzebna od tego poziomu w dół
-      const potrzebna = aktywnePoziomy
-        .slice(i)
-        .reduce((acc, x) => acc + ladownoscOdCzasu(czasSek, x.loot), 0);
-
-      if (potrzebna > suma) continue;
-
-      for (let j = i; j < aktywnePoziomy.length; j++) {
-        const pj = aktywnePoziomy[j];
-        const ladPotrzebna = ladownoscOdCzasu(czasSek, pj.loot);
-        const doWziecia = Math.min(ladPotrzebna, pozostalaLad);
-
-        rozklad[pj.index] = doWziecia;
-        pozostalaLad -= doWziecia;
-      }
-      break;
-    }
-
-    // faktyczne przydzielenie jednostek
-    const wynik = rozdysponujJednostki(rozklad, { ...lista });
-
-    // faktyczna ładowność per poziom
-    const ladNaPoziom = [0, 0, 0, 0];
-    for (let i = 0; i < 4; i++) {
-      ladNaPoziom[i] =
-        wynik.Pikinier[i] * lad.Pikinier +
-        wynik.Miecznik[i] * lad.Miecznik +
-        wynik.Topornik[i] * lad.Topornik +
-        wynik["Łucznik"][i] * lad["Łucznik"] +
-        wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
-        wynik["Łucznik na koniu"][i] * lad["Łucznik na koniu"] +
-        wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
-    }
-
-    // czas zawsze liczony z funkcji czasOdLadownosci
-    const czasy = ladNaPoziom.map((l, i) =>
-      l > 0 && document.getElementById(poziomy[i].id).checked
-        ? secondsToHHMMSS(czasOdLadownosci(l, poziomy[i].val))
-        : "00:00:00"
-    );
-
-    render(wynik, czasy);
-    return;
-  }
-
-  // ----------------- NORMALNE OBLICZENIE -----------------
-  const aktywne = poziomy.map(p =>
-    document.getElementById(p.id).checked ? p.val : 0
-  );
-
-  const odw = aktywne.map(v => v ? 1 / v : 0);
-  const s = odw.reduce((a, b) => a + b, 0);
-
-  const rozklad = odw.map(o => s ? Math.round(suma * o / s) : 0);
-
-  // faktyczne przydzielenie jednostek
-  const wynik = rozdysponujJednostki(rozklad, { ...lista });
-
-  // faktyczna ładowność per poziom
-  const ladNaPoziom = [0, 0, 0, 0];
-  for (let i = 0; i < 4; i++) {
-    ladNaPoziom[i] =
-      wynik.Pikinier[i] * lad.Pikinier +
-      wynik.Miecznik[i] * lad.Miecznik +
-      wynik.Topornik[i] * lad.Topornik +
-      wynik["Łucznik"][i] * lad["Łucznik"] +
-      wynik["Lekka kawaleria"][i] * lad["Lekka kawaleria"] +
-      wynik["Łucznik na koniu"][i] * lad["Łucznik na koniu"] +
-      wynik["Ciężka kawaleria"][i] * lad["Ciężka kawaleria"];
-  }
-
-  const czasy = ladNaPoziom.map((l, i) =>
-    l > 0 && aktywne[i] > 0
-      ? secondsToHHMMSS(czasOdLadownosci(l, aktywne[i]))
-      : "00:00:00"
-  );
-
-  render(wynik, czasy);
-}
-
-
-function render(w, czasy) {
-  const tbody = document.getElementById("wynik");
-  tbody.innerHTML = "";
-
-  for (const [k, v] of Object.entries(w)) {
-    const tr = document.createElement("tr");
-    tr.innerHTML =
-      `<td>${k}</td>` +
-      v.map(x => `<td>${x}</td>`).join("");
-    tbody.appendChild(tr);
-  }
-  
-  const tr = document.createElement("tr");
-  tr.innerHTML =
-    `<td><strong>Czas (s)</strong></td>` +
-    czasy.map(c => `<td>${c}</td>`).join("");
-  tbody.appendChild(tr);
-
-}
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
