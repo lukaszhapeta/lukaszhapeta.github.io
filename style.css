@@ -1,0 +1,615 @@
+/* =====================================================================
+   Gothic Remake Lockpick Solver — styles
+   Motyw: ciemny, matowy, techniczny. Bez gradientów, glowów, animacji.
+   ===================================================================== */
+
+/* ---- Font: Ethnocentric Regular -------------------------------------
+   Jeżeli posiadasz plik czcionki, umieść go w folderze /fonts/ obok
+   index.html i odkomentuj poniższy blok @font-face. Do tego czasu
+   nazwa aplikacji korzysta z bezpiecznego fallbacku (bold, szeroki
+   letter-spacing), aby zachować podobny, techniczny charakter.
+------------------------------------------------------------------------ */
+/*
+@font-face {
+  font-family: 'Ethnocentric';
+  src: url('./fonts/Ethnocentric.woff2') format('woff2'),
+       url('./fonts/Ethnocentric.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+:root {
+  /* Kolory */
+  --color-bg: #0a0a0b;
+  --color-bg-alt: #0e0e10;
+  --color-panel: #141416;
+  --color-panel-border: #29292d;
+  --color-panel-border-soft: #202023;
+  --color-text: #f0f0f0;
+  --color-text-dim: #9a9a9f;
+  --color-text-faint: #6c6c72;
+  --color-accent: #B77FEF;
+  --color-accent-soft: rgba(183, 127, 239, 0.35);
+  --color-danger: #e2584f;
+  --color-danger-soft: rgba(226, 88, 79, 0.16);
+
+  /* Typografia */
+  --font-display: 'Ethnocentric', 'Arial Narrow', Arial, sans-serif;
+  --font-body: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Consolas', 'SFMono-Regular', Menlo, monospace;
+
+  /* Layout */
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --page-margin: 10vw;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+body {
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+}
+
+/* ---------------------------------------------------------------------
+   Header
+------------------------------------------------------------------------ */
+.app-header {
+  padding: 40px var(--page-margin) 20px;
+  border-bottom: 1px solid var(--color-panel-border-soft);
+}
+
+.app-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+.app-title-accent {
+  color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------
+   Mobile switch (Starting position <-> Moveset) — ukryty na desktopie
+------------------------------------------------------------------------ */
+.mobile-switch {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .mobile-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px var(--page-margin) 0;
+    padding: 8px 10px;
+    background: var(--color-panel);
+    border: 1px solid var(--color-panel-border);
+    border-radius: var(--radius-m);
+  }
+
+  .mobile-switch-option {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--color-text-faint);
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    padding: 8px 4px;
+    cursor: pointer;
+  }
+
+  .mobile-switch-option.is-active {
+    color: var(--color-text);
+  }
+
+  .mobile-switch-option:first-child {
+    text-align: right;
+  }
+
+  .mobile-switch-option:last-child {
+    text-align: left;
+  }
+
+  .mobile-switch-track {
+    position: relative;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 24px;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-panel-border);
+    border-radius: 999px;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .mobile-switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    transition: left 0.15s ease;
+  }
+
+  .mobile-switch-track.is-right .mobile-switch-thumb {
+    left: 24px;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Layout — desktop: dwie kolumny obok siebie + solution na całą szerokość
+------------------------------------------------------------------------ */
+.layout {
+  padding: 28px var(--page-margin) 60px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "starting moveset"
+    "solution solution";
+  gap: 20px;
+}
+
+.panel-starting { grid-area: starting; }
+.panel-moveset  { grid-area: moveset; }
+.panel-solution { grid-area: solution; }
+
+@media (max-width: 860px) {
+  :root {
+    --page-margin: 5vw;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "starting"
+      "moveset"
+      "solution";
+    gap: 16px;
+  }
+
+  /* Na telefonie panele starting/moveset są przełączane suwakiem */
+  .panel-starting, .panel-moveset {
+    display: none;
+  }
+
+  .panel-starting.is-active-mobile, .panel-moveset.is-active-mobile {
+    display: block;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Panel — matowa karta
+------------------------------------------------------------------------ */
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-panel-border);
+  border-radius: var(--radius-m);
+  padding: 22px;
+}
+
+.panel-title {
+  margin: 0 0 18px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.panel-subtitle {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-text-faint);
+  font-size: 12px;
+  margin-left: 6px;
+}
+
+/* ---------------------------------------------------------------------
+   Number of blocks — slider
+------------------------------------------------------------------------ */
+.control-group {
+  margin-bottom: 22px;
+}
+
+.control-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.control-label {
+  font-size: 13px;
+  color: var(--color-text-dim);
+}
+
+.control-value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-accent);
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-bound {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: var(--color-panel-border);
+  outline: none;
+  border-radius: 999px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------
+   Pin grid
+------------------------------------------------------------------------ */
+.pin-grid-wrap {
+  overflow-x: auto;
+}
+
+.pin-grid {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100%;
+}
+
+.pin-grid-header {
+  display: grid;
+  grid-template-columns: 34px repeat(7, 1fr);
+  gap: 2px;
+}
+
+.pin-grid-header-cell {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-faint);
+}
+
+.pin-row {
+  display: grid;
+  grid-template-columns: 34px repeat(7, 1fr);
+  align-items: center;
+  gap: 2px;
+}
+
+.pin-row-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-dim);
+}
+
+.pin-hit {
+  background: none;
+  border: none;
+  padding: 6px 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pin-visual {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-faint);
+  position: relative;
+  transition: border-color 0.1s ease;
+}
+
+.pin-hit:hover .pin-visual {
+  border-color: var(--color-text-dim);
+}
+
+/* Pin centralny (pin 4): czerwony outline WEWNĄTRZ */
+.pin-visual.is-center::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 2px solid var(--color-danger);
+}
+
+/* Pin wybrany: lawendowy outline NA ZEWNĄTRZ */
+.pin-visual.is-selected {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-color: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------
+   Solve button
+------------------------------------------------------------------------ */
+.solve-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  padding: 12px 20px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--color-panel-border);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.btn-solve {
+  text-transform: uppercase;
+  font-weight: 600;
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.btn-solve:hover {
+  background: var(--color-accent-soft);
+}
+
+.btn-solve.is-error {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.btn-solve.is-error:hover {
+  background: var(--color-danger-soft);
+}
+
+.btn-secondary {
+  color: var(--color-text-dim);
+}
+
+.btn-secondary:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-dim);
+}
+
+.solve-warning {
+  font-size: 12px;
+  color: var(--color-danger);
+}
+
+/* ---------------------------------------------------------------------
+   Moveset table
+------------------------------------------------------------------------ */
+.moveset-warning {
+  font-size: 12px;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-s);
+  padding: 8px 10px;
+  margin: 0 0 14px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.moveset-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.moveset-table th, .moveset-table td {
+  text-align: center;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--color-panel-border-soft);
+  color: var(--color-text-dim);
+  min-width: 28px;
+}
+
+.moveset-table thead th {
+  color: var(--color-text-faint);
+  font-weight: 400;
+}
+
+.moveset-table td:first-child, .moveset-table th:first-child {
+  text-align: left;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.moveset-table td.val-pos { color: var(--color-accent); }
+.moveset-table td.val-neg { color: var(--color-danger); }
+
+.moveset-table td.moveset-cell {
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-s);
+  transition: background 0.1s ease;
+}
+
+.moveset-table td.moveset-cell:hover {
+  background: var(--color-bg-alt);
+}
+
+.moveset-table td.moveset-cell:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* ---------------------------------------------------------------------
+   Solution panel
+------------------------------------------------------------------------ */
+.solution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.solution-header .panel-title {
+  margin-bottom: 0;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-switch-label {
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+
+.mode-switch-label[data-active="true"] {
+  color: var(--color-text);
+}
+
+.mode-toggle {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1px solid var(--color-panel-border);
+  background: var(--color-bg-alt);
+  cursor: pointer;
+  padding: 0;
+}
+
+.mode-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  transition: left 0.12s ease;
+}
+
+.mode-toggle[data-mode="arrows"] .mode-toggle-thumb {
+  left: 22px;
+}
+
+.solution-content {
+  margin-top: 18px;
+  min-height: 60px;
+}
+
+.solution-placeholder {
+  color: var(--color-text-faint);
+  font-size: 13px;
+  margin: 0;
+}
+
+.solution-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.solution-lines li {
+  display: flex;
+  gap: 8px;
+  color: var(--color-text);
+}
+
+.solution-lines .move-block {
+  color: var(--color-text-dim);
+  min-width: 30px;
+}
+
+.solution-lines .move-dir {
+  color: var(--color-accent);
+}
+
+.solution-arrows {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--color-text);
+  word-break: break-word;
+  margin: 0;
+}
+
+.solution-arrows .step {
+  color: var(--color-accent);
+  margin-right: 10px;
+}
+
+.solution-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: 0;
+}
+
+.solution-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
